@@ -31,6 +31,8 @@ void ProduceDataCards(
 				int decaymode=1,//if initialise to -1, no selection made!
 				int CPMethod=1, //initialised the charged particle cutoff and the appendix for the cat.
 				int Observable=21,
+				bool useEmbedded=false,
+				bool FFmethod=false,
 				//TString directory = "/Users/klundert/DESY/HiggsCPProjectSoftware/Outputs/2019_11_17_Unfiltered_NewTopNorm/predictions_2017/", //latest versionbefore switchng to deeptau
 				TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HiggsCP/Outputs/test_1S_3B/NTuples_mt_2017/predictions_2017/"
 				){
@@ -39,8 +41,6 @@ void ProduceDataCards(
   vector<int> catIndices={0,1,2,3,-1};
   const int nCategories=4;
   const int nSignCategories=1;
-  const bool useEmbedded=false;
-  const bool FFmethod=false;
   
   if(useEmbedded)SampleList.push_back("embedded");
   else SampleList.push_back("Ztt");
@@ -153,28 +153,28 @@ void ProduceDataCards(
 
        //here add the bg samples to qcd object. Note we identify bg as not data and not 125. This MUST always be in the sample names in configurable!
       if(!(Configs.at(std::make_pair(catIndex,sample))->HistoName2D.Contains("data_obs")||Configs.at(std::make_pair(catIndex,sample))->HistoName2D.Contains("125")||Configs.at(std::make_pair(catIndex,sample))->HistoName2D.Contains("OldSignals"))){
-	Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHistoSS->Add(Configs.at(std::make_pair(catIndex,sample))->TwoDimHistoSS);
-        if(FFmethod)Configs.at(std::make_pair(catIndex,"fakes"))->TwoDimHistoAR->Add(Configs.at(std::make_pair(catIndex,sample))->TwoDimHistoAR);
+	if(!FFmethod)Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHistoSS->Add(Configs.at(std::make_pair(catIndex,sample))->TwoDimHistoSS);
+        else Configs.at(std::make_pair(catIndex,"fakes"))->TwoDimHistoAR->Add(Configs.at(std::make_pair(catIndex,sample))->TwoDimHistoAR);
       }
     }
 
     //now the ss backgrounds have been filled. copy ss data, subtract the backgrounds
-    Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHisto->Add(Configs.at(std::make_pair(catIndex,"data"))->TwoDimHistoSS);    
-    Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHisto->Add(Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHistoSS,-1);
-    cout<<"Constructed the QCD bg"<<endl;
-    
-    if(FFmethod){
+    if(!FFmethod){
+      Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHisto->Add(Configs.at(std::make_pair(catIndex,"data"))->TwoDimHistoSS);    
+      Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHisto->Add(Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHistoSS,-1);
+      cout<<"Constructed the QCD bg"<<endl;
+    }else{
       Configs.at(std::make_pair(catIndex,"fakes"))->TwoDimHisto->Add(Configs.at(std::make_pair(catIndex,"data"))->TwoDimHistoAR);    
       Configs.at(std::make_pair(catIndex,"fakes"))->TwoDimHisto->Add(Configs.at(std::make_pair(catIndex,"fakes"))->TwoDimHistoAR,-1);
-    cout<<"Constructed the fakes bg"<<endl;
-   
-
+      cout<<"Constructed the fakes bg"<<endl;
+    
+      
     }
 
 
     CatDir->cd();    
-    Configs.at(std::make_pair(catIndex,"QCD"))->Write2DHistoToDir(CatDir);
-    if(FFmethod)Configs.at(std::make_pair(catIndex,"fakes"))->Write2DHistoToDir(CatDir);
+    if(!FFmethod)Configs.at(std::make_pair(catIndex,"QCD"))->Write2DHistoToDir(CatDir);
+    else Configs.at(std::make_pair(catIndex,"fakes"))->Write2DHistoToDir(CatDir);
     //prompt QCD for quick check if nothing suspicious
     if(HighVerbose){
       cout<<"Configs[catIndex][nSamples-1]->HistoName2D "<<Configs.at(std::make_pair(catIndex,"QCD"))->HistoName2D <<" Configs[catIndex][nSamples-1]->TwoDimHisto->GetSumOfWeights()  "<<Configs.at(std::make_pair(catIndex,"QCD"))->TwoDimHisto->GetSumOfWeights() <<endl;}
