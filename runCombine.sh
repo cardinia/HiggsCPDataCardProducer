@@ -1,6 +1,12 @@
 #!/bin/sh
-MorphingSMCPDecays18 --output_folder="test_cp" --postfix="-2D" --ttbar_fit=false --input_folder_mt="DESY/CP/test_cp" --no_shape_systs=1 --do_jetfakes=true --do_embedding=true
-combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixtureDecays:CPMixtureDecays -i output/test_cp/htt_mt_Combined_13TeV/* -o ws.root --parallel 8
-combineTool.py -m 125 -M MultiDimFit --setParameters muV=1,alpha=0,muggH=1,mutautau=1 --setParameterRanges alpha=-90,90 --points 20 --redefineSignalPOIs alpha -d output/test_cp/htt_mt_Combined_13TeV/125/ws.root --algo grid -t -1 --there -n.alpha --alignEdges 1
-cp output/test_cp/htt_mt_Combined_13TeV/125/higgsCombine.alpha.MultiDimFit.mH125.root output/test_cp/htt_mt_Combined_13TeV/125/higgsCoine.alpha.MultiDimFit.mH125.root
-python $CMSSW_BASE/src/CombineHarvester/HTTSMCPDecays18/scripts/plot1DScan.py --main=output/test_cp/htt_mt_Combined_13TeV/125/higgsCoine.alpha.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha (#circ)" --y-max=0.7
+DIRECTORY=output/test_cp/htt_mt_murho_13TeV
+
+MorphingSMCPDecays18 --output_folder="test_cp" --postfix="-2D" --ttbar_fit=false --input_folder_mt="DESY/CP/test_cp" --no_shape_systs=1 --do_jetfakes=$APPLY_FF --do_embedding=$USE_EMBEDDED
+
+combineTool.py -M T2W -P CombineHarvester.CombinePdfs.CPMixtureDecays:CPMixtureDecays -i output/test_cp/htt_mt_mupi_13TeV/* -o ws.root --parallel 8
+
+combineTool.py -m 125 -M MultiDimFit --setParameters muV=1,alpha=0,muggH=1,mutautau=1 --setParameterRanges alpha=-90,90 --points 20 --redefineSignalPOIs alpha -d $DIRECTORY/125/ws.root --algo grid -t -1 --there -n.alpha --alignEdges 1
+
+cp $DIRECTORY/125/higgsCombine.alpha.MultiDimFit.mH125.root $DIRECTORY/125/higgsCoine.alpha.MultiDimFit.mH125.root
+
+python $CMSSW_BASE/src/CombineHarvester/HTTSMCPDecays18/scripts/plot1DScan.py --main=$DIRECTORY/125/higgsCoine.alpha.MultiDimFit.mH125.root --POI=alpha --output=alpha --no-numbers --no-box --x_title="#alpha (#circ)" --y-max=0.7

@@ -502,7 +502,7 @@ inline static TH1F * Unfold(TH2F * histInput) {
 
    //Provisional binning for mu+pi case, which we adopt for dm=-1 also
    if(DM==0||DM==-1){
-     if(CAT==0) tmp={0, 0.5, 0.8, 1};
+     if(CAT==0) tmp={0, 0.4, 0.6, 0.8, 1};
      else if(CAT==1) tmp={0, 0.55, 0.75, 1}; //last bin must be 0.8 to 1, otherwise ratio goes bad.. cutting bins further in two gives issues
      else if(CAT==2) tmp={0, 0.55, 0.75, 1}; 
      else if(CAT==3) tmp={0, 0.5, 0.7, 1}; 
@@ -515,7 +515,7 @@ inline static TH1F * Unfold(TH2F * histInput) {
 
    //mu+rho in dp method
    else if(DM==1&&CM==1){
-     if(CAT==0) tmp={0, 0.5, 0.8, 1}; 
+     if(CAT==0) tmp={0, 0.4, 0.6, 0.8, 1}; 
      else if(CAT==1) tmp={0, 0.55, 0.75, 1}; 
      else if(CAT==2) tmp={0, 0.55, 0.75, 1}; 
      else if(CAT==3) tmp={0, 0.5, 0.7, 1}; 
@@ -527,7 +527,7 @@ inline static TH1F * Unfold(TH2F * histInput) {
    }
 
    else if(DM==11||DM==10){//other category. We only need signal cats, rest is to avoid crash..
-     if(CAT==0) tmp={0, 0.5, 0.8, 1}; 
+     if(CAT==0) tmp={0, 0.4, 0.6, 0.8, 1}; 
      else if(CAT==1) tmp={0, 0.55, 0.75, 1}; 
      else if(CAT==2) tmp={0, 0.55, 0.75, 1}; 
      else if(CAT==3) tmp={0, 0.5, 0.7, 1}; 
